@@ -16,7 +16,8 @@
 @property(nonatomic,copy)NSString * decodestr;
 @property(nonatomic,strong)WKWebView * webView;
 
-//运行此项目时  需要下载一个zip 然后才可以进行解压展示  没有测试环境需要的zip链接 可以自己搭建个本地服务器 自己放一个压缩包放上去测试 （搭建服务器链接网址:）
+//运行此项目时  需要下载一个zip 然后才可以进行解压展示  没有测试环境需要的zip链接 可以自己搭建个本地服务器 自己放一个压缩包放上去测试 （搭建服务器链接网址:https://www.jianshu.com/p/ad0833f4845a）
+//项目简书地址：https://www.jianshu.com/p/c40e39fe600e
 @end
 
 @implementation ViewController
@@ -30,7 +31,7 @@
 -(void)btnlcick:(UIButton*)btn{
     switch (btn.tag) {
         case 666://下载
-            [self rquestZipArchivePath:@"http://192.168.1.149:8080/dist.zip" andHtmlVersion:@"666"];
+            [self rquestZipArchivePath:@"http://192.123.1.149:8080/dist.zip" andHtmlVersion:@"666"];
             break;
         case 667://解压
             [self releaseZipFilesWithUnzipFileAtPath:self.urlstr Destination:self.decodestr];
