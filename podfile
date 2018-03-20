@@ -1,0 +1,8 @@
+
+platform :ios,'8.0'
+target 'xaizaizip' do 
+
+pod 'AFNetworking'
+pod 'SSZipArchive'
+
+end
