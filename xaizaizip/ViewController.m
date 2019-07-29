@@ -24,18 +24,18 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [self addbtn];
-
+    
 }
 -(void)btnlcick:(UIButton*)btn{
     switch (btn.tag) {
         case 666://下载
-            [self rquestZipArchivePath:@"http://192.123.1.149:8080/dist.zip" andHtmlVersion:@"666"];
+            [self rquestZipArchivePath:@"http://192.168.1.35:8080/dist.zip" andHtmlVersion:@"666"];
             break;
         case 667://解压
             [self releaseZipFilesWithUnzipFileAtPath:self.urlstr Destination:self.decodestr];
-
+            
             break;
         case 668://展示
             [self showWkwebview];
@@ -63,18 +63,27 @@
     _webView.navigationDelegate=self;
     _webView.UIDelegate = self;
     
-//
+    //
     NSArray *documentArray = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
     NSString *path = [[documentArray lastObject] stringByAppendingPathComponent:@"Preferences"];
+/*   判断文件是否存在
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL isexit = [fileManager fileExistsAtPath:urlStr];
+*/
+/*
     NSURL *url=[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/dist/index.html",path]];
     NSString *urlStr = [url absoluteString];
     urlStr = [urlStr stringByReplacingOccurrencesOfString:@"file://" withString:@""];
-
-    
     [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:urlStr]]];
-
+ */
+    
+//此处wkwebview加载方式有可能会变（加载本地路径和网址不一样 模拟器真机也不一样 建议用真机调试）
+    NSString * tempurl = [NSString stringWithFormat:@"file://%@/dist/666.html",path];
+    NSURL * accessUrl = [[NSURL URLWithString:tempurl] URLByDeletingLastPathComponent];
+    [self.webView loadFileURL:[NSURL URLWithString:tempurl] allowingReadAccessToURL:accessUrl];
+    
     [self.view addSubview:self.webView];
-
+    
 }
 
 -(void)rquestZipArchivePath:(NSString *)pathUrl andHtmlVersion:(NSString *)version{
@@ -87,12 +96,12 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     
     NSURLSessionDownloadTask * downloadTask =[manager downloadTaskWithRequest:request progress:^(NSProgress * _Nonnull downloadProgress) {
- 
+        
         double curr=(double)downloadProgress.completedUnitCount;
         double total=(double)downloadProgress.totalUnitCount;
         NSLog(@"下载进度==%.2f",curr/total);
-
-
+        
+        
     } destination:^NSURL * _Nonnull(NSURL * _Nonnull targetPath, NSURLResponse * _Nonnull response) {
         //- block的返回值, 要求返回一个URL, 返回的这个URL就是文件的位置的路径
         
@@ -126,28 +135,28 @@
         self.urlstr=htmlFilePath;
         self.decodestr=path;
     }];
- 
+    
     [downloadTask resume];
 }
 #pragma mark 解压
 - (void)releaseZipFilesWithUnzipFileAtPath:(NSString *)zipPath Destination:(NSString *)unzipPath{
     //    NSLog(@"%@,%@",zipPath,unzipPath);
     NSError *error;
-
+    
     if ([SSZipArchive unzipFileAtPath:zipPath toDestination:unzipPath overwrite:YES password:nil error:&error delegate:self]) {
         NSLog(@"success");
     }
     else{
         NSLog(@"%@",error);
     }
-  // 压缩包的全路径(包括文件名)
-//    NSString *destinationPath = zipPath;
+    // 压缩包的全路径(包括文件名)
+    //    NSString *destinationPath = zipPath;
     // 目标路径,
     NSString *destinationPath = unzipPath;
     // 解压, 返回值代表是否解压完成
     Boolean b = [SSZipArchive unzipFileAtPath:zipPath toDestination:destinationPath];
     
-//    ------------ 带回调的解压    ------------
+    //    ------------ 带回调的解压    ------------
     Boolean b1 = [SSZipArchive unzipFileAtPath:zipPath toDestination:destinationPath progressHandler:^(NSString * _Nonnull entry, unz_file_info zipInfo, long entryNumber, long total) {
         // entry : 解压出来的文件名
         //entryNumber : 第几个, 从1开始
@@ -159,7 +168,7 @@
         // error 错误信息
         NSLog(@"completionHandler:%@, , succeeded:%d, error:%@", path, succeeded, error);
     }];
-
+    
 }
 
 #pragma mark - SSZipArchiveDelegate
@@ -181,7 +190,7 @@
         [btn addTarget:self action:@selector(btnlcick:) forControlEvents:UIControlEventTouchUpInside];
         [self.view addSubview:btn];
     }
-   
+    
 }
 
 //#pragma mark - WKUIDelegate
